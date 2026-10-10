@@ -1,0 +1,498 @@
+{
+  "brand": {
+    "zh-Hans": "隐坞 DockHush",
+    "en": "DockHush"
+  },
+  "intro": {
+    "zh-Hans": "为应用设置关闭行为和 Dock 图标。设置自动保存。",
+    "en": "Choose how apps close and appear in the Dock. Changes save automatically."
+  },
+  "self.dockFailed": {
+    "zh-Hans": "未能调整 DockHush 的 Dock 图标，请重试。",
+    "en": "Couldn’t change DockHush’s Dock icon. Please try again."
+  },
+  "self.dockShown": {
+    "zh-Hans": "DockHush 已显示在 Dock 中。",
+    "en": "DockHush is now shown in the Dock."
+  },
+  "self.dockHidden": {
+    "zh-Hans": "DockHush 已从 Dock 隐藏，可从菜单栏重新打开。",
+    "en": "DockHush is hidden from the Dock. Reopen it from the menu bar."
+  },
+  "error.save": {
+    "zh-Hans": "未能保存设置：{0}",
+    "en": "Couldn’t save settings: {0}"
+  },
+  "zspace.updated": {
+    "zh-Hans": "极空间设置已保存。",
+    "en": "Settings saved for 极空间."
+  },
+  "zspace.restart": {
+    "zh-Hans": "设置已保存。请退出极空间，再通过本窗口重新打开。",
+    "en": "Settings saved. Quit 极空间, then reopen it from this window."
+  },
+  "close.enabled": {
+    "zh-Hans": "已为 {0} 开启关闭时隐藏。",
+    "en": "Hide on Close is on for {0}."
+  },
+  "close.disabled": {
+    "zh-Hans": "已为 {0} 关闭关闭时隐藏。",
+    "en": "Hide on Close is off for {0}."
+  },
+  "close.permission": {
+    "zh-Hans": "设置已保存。开启“辅助功能”权限后生效。",
+    "en": "Settings saved. Enable Accessibility to apply them."
+  },
+  "self.dockHelp": {
+    "zh-Hans": "开启显示，关闭隐藏。立即生效，自动保存。",
+    "en": "On shows the icon; off hides it. Applies immediately and saves automatically."
+  },
+  "dock.helpInstant": {
+    "zh-Hans": "开启显示，关闭隐藏。与“关闭时隐藏”独立设置。",
+    "en": "On shows the icon; off hides it. Independent of Hide on Close."
+  },
+  "dock.helpRestart": {
+    "zh-Hans": "开启显示，关闭隐藏。部分应用需要重启，请先保存工作。原配置会先备份，失败自动恢复。",
+    "en": "On shows the icon; off hides it. Some apps need to restart, so save your work first. Settings are backed up and restored if the change fails."
+  },
+  "dock.shown": {
+    "zh-Hans": "已显示",
+    "en": "Shown"
+  },
+  "dock.hidden": {
+    "zh-Hans": "已隐藏",
+    "en": "Hidden"
+  },
+  "dock.openToApply": {
+    "zh-Hans": "通过本窗口打开后生效",
+    "en": "Open from this window to apply"
+  },
+  "dock.saved": {
+    "zh-Hans": "已有隐藏设置",
+    "en": "Hide setting saved"
+  },
+  "dock.native": {
+    "zh-Hans": "应用默认不显示 Dock 图标",
+    "en": "Hidden by the app by default"
+  },
+  "dock.savedHidden": {
+    "zh-Hans": "已设为隐藏",
+    "en": "Set to hidden"
+  },
+  "dock.savedShown": {
+    "zh-Hans": "已设为显示",
+    "en": "Set to shown"
+  },
+  "dock.restartNeeded": {
+    "zh-Hans": "需要重启验证",
+    "en": "Restart required to verify"
+  },
+  "error.open": {
+    "zh-Hans": "未能打开应用：{0}",
+    "en": "Couldn’t open the app: {0}"
+  },
+  "app.hidden": {
+    "zh-Hans": "已隐藏 {0} 的窗口，应用继续运行。",
+    "en": "Windows hidden for {0}. The app is still running."
+  },
+  "error.hideApp": {
+    "zh-Hans": "未能隐藏 {0}。请确认应用正在运行，并检查“辅助功能”权限。",
+    "en": "Couldn’t hide {0}. Check that the app is running and Accessibility is enabled."
+  },
+  "zspace.hiding": {
+    "zh-Hans": "正在隐藏极空间…",
+    "en": "Hiding 极空间…"
+  },
+  "zspace.opening": {
+    "zh-Hans": "正在打开极空间…",
+    "en": "Opening 极空间…"
+  },
+  "zspace.hidden": {
+    "zh-Hans": "极空间窗口已隐藏，应用继续运行。",
+    "en": "Windows hidden for 极空间. The app is still running."
+  },
+  "zspace.ready": {
+    "zh-Hans": "极空间已打开，关闭时隐藏已就绪。",
+    "en": "极空间 is open. Hide on Close is ready."
+  },
+  "zspace.failed": {
+    "zh-Hans": "请退出极空间，再右键点击列表中的应用并选择“打开应用”。",
+    "en": "Quit 极空间, then right-click it in the list and choose Open App."
+  },
+  "error.launch": {
+    "zh-Hans": "未能启动应用：{0}",
+    "en": "Couldn’t launch the app: {0}"
+  },
+  "error.hideWindow": {
+    "zh-Hans": "未能隐藏窗口。请检查应用状态和“辅助功能”权限。",
+    "en": "Couldn’t hide the window. Check the app’s status and Accessibility permission."
+  },
+  "tagline": {
+    "zh-Hans": "应用继续运行，桌面少些打扰。",
+    "en": "Keep apps running. Keep your desktop clear."
+  },
+  "configured.countLabel": {
+    "zh-Hans": "个应用已设置",
+    "en": "Configured apps"
+  },
+  "permission.ready": {
+    "zh-Hans": "关闭时隐藏已就绪",
+    "en": "Hide on Close is ready"
+  },
+  "permission.needed": {
+    "zh-Hans": "需要“辅助功能”权限",
+    "en": "Accessibility permission needed"
+  },
+  "permission.readyHelp": {
+    "zh-Hans": "点击红色关闭按钮隐藏应用；使用 ⌘Q 仍可退出。",
+    "en": "Use the red close button to hide an app. ⌘Q still quits it."
+  },
+  "permission.help": {
+    "zh-Hans": "开启“辅助功能”权限，以使用关闭时隐藏。",
+    "en": "Enable Accessibility to use Hide on Close."
+  },
+  "permission.open": {
+    "zh-Hans": "前往系统设置",
+    "en": "Open System Settings"
+  },
+  "search": {
+    "zh-Hans": "搜索应用…",
+    "en": "Search apps…"
+  },
+  "filter.hideSystem": {
+    "zh-Hans": "隐藏系统应用",
+    "en": "Hide System Apps"
+  },
+  "filter.hideSystemHelp": {
+    "zh-Hans": "仅从列表中隐藏 macOS 自带应用，不影响已有设置。",
+    "en": "Hide built-in macOS apps from this list. Existing settings stay active."
+  },
+  "filter.label": {
+    "zh-Hans": "筛选",
+    "en": "Filter"
+  },
+  "refresh": {
+    "zh-Hans": "刷新应用列表",
+    "en": "Refresh App List"
+  },
+  "column.app": {
+    "zh-Hans": "应用",
+    "en": "App"
+  },
+  "column.close": {
+    "zh-Hans": "关闭时隐藏",
+    "en": "Hide on Close"
+  },
+  "column.dock": {
+    "zh-Hans": "显示 Dock 图标",
+    "en": "Show in Dock"
+  },
+  "status.stopped": {
+    "zh-Hans": "未运行",
+    "en": "Not Running"
+  },
+  "status.running": {
+    "zh-Hans": "正在运行",
+    "en": "Running"
+  },
+  "app.help": {
+    "zh-Hans": "{0}\nDock 图标：{1}\n右键可打开应用或隐藏窗口",
+    "en": "{0}\nDock icon: {1}\nRight-click to open the app or hide its windows"
+  },
+  "action.open": {
+    "zh-Hans": "打开应用",
+    "en": "Open App"
+  },
+  "action.hide": {
+    "zh-Hans": "隐藏窗口",
+    "en": "Hide Windows"
+  },
+  "accessibility.close": {
+    "zh-Hans": "关闭时隐藏 {0}",
+    "en": "Hide on Close for {0}"
+  },
+  "self.closeHelp": {
+    "zh-Hans": "关闭主窗口后，DockHush 会继续运行。",
+    "en": "DockHush keeps running when you close its main window."
+  },
+  "close.help": {
+    "zh-Hans": "点击红色关闭按钮时隐藏应用，保持后台运行。使用 ⌘Q 仍可退出。",
+    "en": "Hide the app when you click its red close button. ⌘Q still quits it."
+  },
+  "accessibility.dock": {
+    "zh-Hans": "在 Dock 中显示 {0}",
+    "en": "Show {0} in Dock"
+  },
+  "status.scanning": {
+    "zh-Hans": "正在查找应用…",
+    "en": "Finding apps…"
+  },
+  "status.empty": {
+    "zh-Hans": "没有找到匹配的应用。",
+    "en": "No matching apps found."
+  },
+  "footer": {
+    "zh-Hans": "共 {0} 个应用 · 部分设置需要重启应用，原配置将先备份。",
+    "en": "{0} apps found · Some changes restart the app after backing up its settings."
+  },
+  "menu.quit": {
+    "zh-Hans": "退出隐坞 DockHush",
+    "en": "Quit DockHush"
+  },
+  "menu.edit": {
+    "zh-Hans": "编辑",
+    "en": "Edit"
+  },
+  "menu.copy": {
+    "zh-Hans": "复制",
+    "en": "Copy"
+  },
+  "menu.paste": {
+    "zh-Hans": "粘贴",
+    "en": "Paste"
+  },
+  "menu.selectAll": {
+    "zh-Hans": "全选",
+    "en": "Select All"
+  },
+  "menu.tooltip": {
+    "zh-Hans": "隐坞 DockHush · 打开主窗口",
+    "en": "DockHush · Open Main Window"
+  },
+  "menu.open": {
+    "zh-Hans": "打开主窗口…",
+    "en": "Open Main Window…"
+  },
+  "menu.openApp": {
+    "zh-Hans": "打开 {0}",
+    "en": "Open {0}"
+  },
+  "error.protected": {
+    "zh-Hans": "此应用受 macOS 保护，无法调整 Dock 图标。",
+    "en": "This app is protected by macOS. Its Dock icon can’t be changed."
+  },
+  "error.symlink": {
+    "zh-Hans": "此应用的配置文件是链接，未作修改。",
+    "en": "This app’s settings file is a link. No changes were made."
+  },
+  "error.noWrite": {
+    "zh-Hans": "无法修改此应用。请检查“App 管理”权限和文件权限。",
+    "en": "Can’t modify this app. Check App Management and file permissions."
+  },
+  "error.pending": {
+    "zh-Hans": "此应用有未完成的恢复记录，请先查看备份。",
+    "en": "This app has an unfinished recovery. Review its backup first."
+  },
+  "error.externalChange": {
+    "zh-Hans": "应用文件已变化，操作已暂停，备份已保留。",
+    "en": "The app’s files changed. The operation was paused and the backup was kept."
+  },
+  "error.launchTimeout": {
+    "zh-Hans": "应用启动超时",
+    "en": "The app took too long to launch"
+  },
+  "error.notLaunched": {
+    "zh-Hans": "应用未能启动",
+    "en": "The app couldn’t launch"
+  },
+  "error.exited": {
+    "zh-Hans": "应用启动后退出",
+    "en": "The app exited after launching"
+  },
+  "error.unsupported": {
+    "zh-Hans": "此应用暂不支持该 Dock 设置",
+    "en": "This app didn’t apply the Dock setting"
+  },
+  "error.busy": {
+    "zh-Hans": "正在处理另一项设置，请稍后再试。",
+    "en": "Another change is in progress. Please try again shortly."
+  },
+  "error.otherCopy": {
+    "zh-Hans": "正在运行此应用的另一份副本，操作已暂停。",
+    "en": "Another copy of this app is running. The operation was paused."
+  },
+  "error.identity": {
+    "zh-Hans": "无法确认应用信息，未作修改。",
+    "en": "Couldn’t verify the app’s identity. No changes were made."
+  },
+  "error.updatedConfig": {
+    "zh-Hans": "应用已更新或设置已变化。操作已暂停，未用旧备份覆盖。",
+    "en": "The app was updated or its settings changed. The operation was paused; the old backup wasn’t applied."
+  },
+  "progress.quitting": {
+    "zh-Hans": "已备份，正在退出应用…如有保存提示，请先保存。",
+    "en": "Settings backed up. Quitting the app… Please respond to any save prompts."
+  },
+  "error.quitTimeout": {
+    "zh-Hans": "应用尚未退出，已取消操作。请处理保存提示后重试。",
+    "en": "The app hasn’t quit, so the change was cancelled. Respond to any save prompts, then try again."
+  },
+  "error.updatedStop": {
+    "zh-Hans": "应用已更新，操作已暂停。",
+    "en": "The app was updated. The operation was paused."
+  },
+  "progress.verifying": {
+    "zh-Hans": "正在重启应用并检查设置…失败将自动恢复。",
+    "en": "Restarting the app and checking the change… Settings will be restored if it fails."
+  },
+  "progress.restoring": {
+    "zh-Hans": "设置未生效，正在恢复原配置…",
+    "en": "The change didn’t take effect. Restoring the previous settings…"
+  },
+  "result.combined": {
+    "zh-Hans": "{0}。{1}",
+    "en": "{0}. {1}"
+  },
+  "result.hidden": {
+    "zh-Hans": "已隐藏 Dock 图标，应用继续运行。",
+    "en": "Dock icon hidden. The app is still running."
+  },
+  "result.shown": {
+    "zh-Hans": "已显示 Dock 图标，应用继续运行。",
+    "en": "Dock icon shown. The app is still running."
+  },
+  "error.saveResult": {
+    "zh-Hans": "未能保存验证结果。{0}",
+    "en": "Couldn’t save the verification result. {0}"
+  },
+  "backup.prefix": {
+    "zh-Hans": " 备份位置：",
+    "en": " Backup location: "
+  },
+  "error.pathChanged": {
+    "zh-Hans": "应用位置已变化，恢复已暂停。",
+    "en": "The app’s location changed. Recovery was paused."
+  },
+  "error.restoreConflict": {
+    "zh-Hans": "应用文件已变化，未覆盖新文件。请查看备份以恢复。",
+    "en": "The app’s files changed. They weren’t overwritten. Review the backup to recover."
+  },
+  "error.readRecovery": {
+    "zh-Hans": "无法读取恢复记录：{0}",
+    "en": "Couldn’t read the recovery record: {0}"
+  },
+  "error.restoreQuit": {
+    "zh-Hans": "应用尚未退出，自动恢复已暂停。",
+    "en": "The app hasn’t quit. Automatic recovery was paused."
+  },
+  "error.updated": {
+    "zh-Hans": "应用已更新",
+    "en": "The app was updated"
+  },
+  "error.restoreVerify": {
+    "zh-Hans": "未能确认恢复结果",
+    "en": "Couldn’t verify the recovery"
+  },
+  "result.restoredOpened": {
+    "zh-Hans": "已恢复原配置，并重新打开应用。",
+    "en": "Previous settings restored and the app reopened."
+  },
+  "error.reopen": {
+    "zh-Hans": "原配置已恢复，但未能重新打开应用：{0}",
+    "en": "Previous settings restored, but the app couldn’t reopen: {0}"
+  },
+  "result.restored": {
+    "zh-Hans": "已恢复原配置。",
+    "en": "Previous settings restored."
+  },
+  "error.restore": {
+    "zh-Hans": "未能自动恢复，请查看备份。详情：{0}",
+    "en": "Automatic recovery failed. Review the backup. Details: {0}"
+  },
+  "progress.recovering": {
+    "zh-Hans": "正在恢复上次未完成的设置…",
+    "en": "Recovering an unfinished change…"
+  },
+  "filter.all": {
+    "zh-Hans": "全部应用",
+    "en": "All Apps"
+  },
+  "filter.configured": {
+    "zh-Hans": "已设置",
+    "en": "Configured"
+  },
+  "filter.running": {
+    "zh-Hans": "正在运行",
+    "en": "Running"
+  },
+  "filter.dock": {
+    "zh-Hans": "可调整 Dock 图标",
+    "en": "Dock Controls Available"
+  },
+  "settings.title": {
+    "zh-Hans": "设置",
+    "en": "Settings"
+  },
+  "settings.language": {
+    "zh-Hans": "语言 / Language",
+    "en": "语言 / Language"
+  },
+  "settings.languageHelp": {
+    "zh-Hans": "语言切换立即生效，不会重启其他应用。",
+    "en": "Language changes apply immediately without restarting other apps."
+  },
+  "settings.system": {
+    "zh-Hans": "跟随系统 / System Default",
+    "en": "跟随系统 / System Default"
+  },
+  "settings.accessibility": {
+    "zh-Hans": "辅助功能",
+    "en": "Accessibility"
+  },
+  "settings.appManagement": {
+    "zh-Hans": "App 管理",
+    "en": "App Management"
+  },
+  "settings.permissions": {
+    "zh-Hans": "权限",
+    "en": "Permissions"
+  },
+  "settings.managementHelp": {
+    "zh-Hans": "调整部分应用的 Dock 图标需要“App 管理”权限。",
+    "en": "Changing some apps’ Dock icons requires App Management permission."
+  },
+  "settings.backups": {
+    "zh-Hans": "打开备份文件夹",
+    "en": "Open Backup Folder"
+  },
+  "settings.details": {
+    "zh-Hans": "查看详情",
+    "en": "View Details"
+  },
+  "settings.done": {
+    "zh-Hans": "完成",
+    "en": "Done"
+  },
+  "menu.settings": {
+    "zh-Hans": "设置…",
+    "en": "Settings…"
+  },
+  "result.details": {
+    "zh-Hans": "{0}\n{1}",
+    "en": "{0}\n{1}"
+  },
+  "result.backup": {
+    "zh-Hans": "{0}\n备份位置：{1}",
+    "en": "{0}\nBackup location: {1}"
+  },
+  "zspace.nodeRequired": {
+    "zh-Hans": "极空间适配需要 Node.js 22 或更新版本，请安装后重试。",
+    "en": "ZSpace integration requires Node.js 22 or later. Install it, then try again."
+  },
+  "zspace.consentTitle": {
+    "zh-Hans": "启用极空间后台运行适配？",
+    "en": "Enable ZSpace background integration?"
+  },
+  "zspace.consentBody": {
+    "zh-Hans": "请先正常退出极空间并保存工作。DockHush 将使用仅限本机的临时调试端口，在极空间进程内安装关闭时隐藏和 Dock 控制逻辑，然后关闭端口。端口开放期间，本机调试连接可以访问极空间进程内的数据。此适配依赖极空间版本；失败时可能退出刚启动的极空间。",
+    "en": "Save your work and quit ZSpace first. DockHush opens a temporary localhost debugger, installs Hide on Close and Dock controls inside ZSpace, then closes the debugger. While open, local debugger connections can access ZSpace process data. Support depends on the ZSpace version; setup failure may terminate the newly launched ZSpace process."
+  },
+  "zspace.consentAllow": {
+    "zh-Hans": "启用并打开",
+    "en": "Enable and Open"
+  },
+  "zspace.consentCancel": {
+    "zh-Hans": "取消",
+    "en": "Cancel"
+  }
+}

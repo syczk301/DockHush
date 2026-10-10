@@ -1,0 +1,11 @@
+.DS_Store
+/build/
+/dist/
+*.log
+*.dmg
+*.app/
+.env
+.env.*
+*.p12
+*.p8
+*.mobileprovision
