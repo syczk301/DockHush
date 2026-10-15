@@ -38,7 +38,7 @@ A check verifies process survival and the resulting activation policy. Apps may 
 
 The adapter expects `/Applications/极空间.app` and **Node.js 22+**, found in standard Homebrew locations or process PATH. Other features do not require Node.js.
 
-Save work and quit ZSpace, configure its row, then choose Open App. A separate prompt explains and requests activation: a temporary `127.0.0.1` debugger installs close/Dock handlers inside the main process, then closes and checks the port. Local debugger connections can access process data while it is open. Support depends on the client version; setup failure may terminate the newly started process to avoid leaving its debugger enabled. An already-running unhooked instance is not restarted automatically.
+Toggle either switch in the ZSpace row to start integration. Save your work before accepting the first-use prompt; after confirmation, DockHush gracefully quits and relaunches ZSpace: a temporary `127.0.0.1` debugger installs close/Dock handlers inside the main process, then closes and checks the port. Local debugger connections can access process data while it is open. Support depends on the client version; setup failure may terminate the newly started process to avoid leaving its debugger enabled. If ZSpace does not quit in time, setup stops and settings remain unapplied. After integration, both switches apply within about one second. Integration must be installed again after ZSpace exits.
 
 ## Local data and uninstalling
 

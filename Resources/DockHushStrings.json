@@ -28,8 +28,8 @@
     "en": "Settings saved for 极空间."
   },
   "zspace.restart": {
-    "zh-Hans": "设置已保存。请退出极空间，再通过本窗口重新打开。",
-    "en": "Settings saved. Quit 极空间, then reopen it from this window."
+    "zh-Hans": "设置已保存，尚未接管极空间。请通过本面板打开并允许适配。",
+    "en": "Settings saved; ZSpace integration is not active. Open it from this panel and allow integration."
   },
   "close.enabled": {
     "zh-Hans": "已为 {0} 开启关闭时隐藏。",
@@ -484,8 +484,8 @@
     "en": "Enable ZSpace background integration?"
   },
   "zspace.consentBody": {
-    "zh-Hans": "请先正常退出极空间并保存工作。DockHush 将使用仅限本机的临时调试端口，在极空间进程内安装关闭时隐藏和 Dock 控制逻辑，然后关闭端口。端口开放期间，本机调试连接可以访问极空间进程内的数据。此适配依赖极空间版本；失败时可能退出刚启动的极空间。",
-    "en": "Save your work and quit ZSpace first. DockHush opens a temporary localhost debugger, installs Hide on Close and Dock controls inside ZSpace, then closes the debugger. While open, local debugger connections can access ZSpace process data. Support depends on the ZSpace version; setup failure may terminate the newly launched ZSpace process."
+    "zh-Hans": "请先保存极空间中的工作。确认后，DockHush 会正常退出并重新启动极空间，使用仅限本机的临时调试端口安装关闭时隐藏和 Dock 控制逻辑，然后关闭端口。接管后开关会直接生效。端口开放期间，本机调试连接可以访问极空间进程内的数据。适配依赖极空间版本；失败时可能退出刚启动的极空间。",
+    "en": "Save your work in ZSpace first. After confirmation, DockHush quits and relaunches ZSpace, uses a temporary localhost debugger to install Hide on Close and Dock controls, then closes the debugger. Switches apply directly after integration. While open, local debugger connections can access ZSpace process data. Support depends on the ZSpace version; setup failure may terminate the newly launched ZSpace process."
   },
   "zspace.consentAllow": {
     "zh-Hans": "启用并打开",
@@ -494,5 +494,9 @@
   "zspace.consentCancel": {
     "zh-Hans": "取消",
     "en": "Cancel"
+  },
+  "zspace.quitFailed": {
+    "zh-Hans": "极空间未正常退出，设置尚未生效。请保存工作并处理退出提示后重试。",
+    "en": "ZSpace did not quit normally; settings are not active. Save your work, resolve any quit prompts, and retry."
   }
 }

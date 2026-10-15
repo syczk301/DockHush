@@ -118,17 +118,21 @@ final class Manager: ObservableObject {
         } catch { notice = L("error.save", [String(describing: error.localizedDescription)]) }
     }
     var configured: Set<String> { managed.union(dockManaged).union([helperID]) }
-    func runtimeRuleNotice() -> String {
+    var zspaceHooked: Bool {
         let url = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/DockHush/zspace-session.json")
         if let data = try? Data(contentsOf:url), let state = try? JSONSerialization.jsonObject(with:data) as? [String:Any],
-           state["rulesVersion"] as? Int == 2, state["pid"] as? Int == running(zspaceID).map({Int($0.processIdentifier)}) {return L("zspace.updated")}
-        return L("zspace.restart")
+           state["rulesVersion"] as? Int == 2, let current = running(zspaceID), state["pid"] as? Int == Int(current.processIdentifier) {return true}
+        return false
+    }
+    func applyZspaceRules() {
+        if zspaceHooked { notice = L("zspace.updated") }
+        else { launchZspace(hide:false) }
     }
     func setManaged(_ app: AppRecord, _ value: Bool) {
         if value { managed.insert(app.id) } else { managed.remove(app.id) }
         UserDefaults.standard.set(Array(managed).sorted(), forKey:"managedApps")
         saveRuntimeRules(); changed?()
-        if app.id == zspaceID { notice = runtimeRuleNotice() }
+        if app.id == zspaceID { applyZspaceRules() }
         else { notice = value ? L("close.enabled", [String(describing: app.displayName)]) : L("close.disabled", [String(describing: app.displayName)]) }
         if value && !permission && app.id != zspaceID { notice = L("close.permission") }
     }
@@ -157,7 +161,7 @@ final class Manager: ObservableObject {
         }
         if value {dockManaged.insert(app.id)} else {dockManaged.remove(app.id)}
         UserDefaults.standard.set(Array(dockManaged).sorted(),forKey:"dockHiddenApps")
-        saveRuntimeRules(); changed?(); notice = runtimeRuleNotice()
+        saveRuntimeRules(); changed?(); applyZspaceRules()
     }
     func dockHelp(_ app: AppRecord) -> String {
         if app.id == helperID {return L("self.dockHelp")}
@@ -175,7 +179,7 @@ final class Manager: ObservableObject {
         return L("dock.restartNeeded")
     }
     func open(_ app: AppRecord) {
-        if app.id == zspaceID && configured.contains(app.id) { launchZspace(hide:false); return }
+        if app.id == zspaceID { launchZspace(hide:false); return }
         if let current = running(app.id) {
             current.unhide()
             _ = AXUIElementSetAttributeValue(AXUIElementCreateApplication(current.processIdentifier), kAXHiddenAttribute as CFString, kCFBooleanFalse)
@@ -190,19 +194,25 @@ final class Manager: ObservableObject {
         notice = hideApplication(app.id) ? L("app.hidden", [String(describing: app.displayName)]) : L("error.hideApp", [String(describing: app.displayName)])
         tick += 1
     }
-    func launchZspace(hide: Bool) {
+    func launchZspace(hide: Bool, approved: Bool = false) {
         guard !busy.contains(zspaceID), let resource = Bundle.main.url(forResource:"zspace-switch-launch", withExtension:"mjs") else {return}
         let candidates = ["/opt/homebrew/bin/node", "/usr/local/bin/node"] + (ProcessInfo.processInfo.environment["PATH"] ?? "").split(separator:":").map {String($0)+"/node"}
         guard let nodePath = candidates.first(where:{FileManager.default.isExecutableFile(atPath:$0)}) else {notice=L("zspace.nodeRequired");return}
         let nodeURL = URL(fileURLWithPath:nodePath)
-        if !hide {
-            let stateURL=FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/DockHush/zspace-session.json")
-            let state=(try? Data(contentsOf:stateURL)).flatMap{try? JSONSerialization.jsonObject(with:$0) as? [String:Any]}
-            let hooked = running(zspaceID).map{state?["pid"] as? Int == Int($0.processIdentifier)} ?? false
-            if !hooked {
+        if !hide && !zspaceHooked {
+            if !approved {
                 let alert=NSAlert();alert.messageText=L("zspace.consentTitle");alert.informativeText=L("zspace.consentBody")
                 alert.addButton(withTitle:L("zspace.consentAllow"));alert.addButton(withTitle:L("zspace.consentCancel"))
-                guard alert.runModal() == .alertFirstButtonReturn else{return}
+                guard alert.runModal() == .alertFirstButtonReturn else {notice=L("zspace.restart");return}
+            }
+            if running(zspaceID) != nil {
+                busy.insert(zspaceID); notice=L("progress.quitting")
+                compatibility.quit(zspaceID) { stopped in
+                    self.busy.remove(zspaceID)
+                    guard stopped else {self.notice=L("zspace.quitFailed");return}
+                    self.launchZspace(hide:false, approved:true)
+                }
+                return
             }
         }
         busy.insert(zspaceID)
@@ -379,7 +389,7 @@ struct Panel: View {
                             }
                             Toggle(L("accessibility.close", [String(describing: app.displayName)]),isOn:Binding(get:{app.id == helperID || model.managed.contains(app.id)},set:{model.setManaged(app,$0)}))
                                 .labelsHidden().toggleStyle(.switch).tint(.blue).controlSize(.regular).frame(width:120)
-                                .disabled(app.id == helperID)
+                                .disabled(app.id == helperID || model.busy.contains(app.id))
                                 .help(app.id == helperID ? L("self.closeHelp") : L("close.help"))
                             Toggle(L("accessibility.dock", [String(describing: app.displayName)]),isOn:Binding(get:{!model.dockEnabled(app)},set:{model.setDock(app,!$0)}))
                                 .labelsHidden().toggleStyle(.switch).tint(.blue).controlSize(.regular).frame(width:120)
