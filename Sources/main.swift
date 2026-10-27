@@ -48,6 +48,7 @@ final class Manager: ObservableObject {
     @Published var tick = 0
     @Published var busy: Set<String> = []
     let compatibility = DockCompatibility()
+    let tempoRuntime = TempoRuntime()
     @Published var compatibilityBusy = false
     var changed: (() -> Void)?
     init() {
@@ -62,7 +63,7 @@ final class Manager: ObservableObject {
             (query.isEmpty || $0.displayName.localizedCaseInsensitiveContains(query) || $0.id.localizedCaseInsensitiveContains(query)) &&
             (filter != "configured" || configured.contains($0.id)) &&
             (filter != "running" || running($0.id) != nil) &&
-            (filter != "dock" || $0.id == helperID || $0.id == zspaceID || compatibility.reason($0.path) == nil)
+            (filter != "dock" || $0.id == helperID || $0.id == zspaceID || $0.id == tempoID || compatibility.reason($0.path) == nil)
         }
     }
     func setHelperDockVisible(_ visible: Bool) {
@@ -140,12 +141,14 @@ final class Manager: ObservableObject {
         if app.id == helperID { return !helperDockVisible }
         if app.id == zspaceID { return dockManaged.contains(app.id) }
         if let current = running(app.id) {return current.activationPolicy != .regular}
+        if app.id == tempoID { return dockManaged.contains(app.id) }
         if let setting = compatibility.active[app.id] {return setting.hidden}
         if app.nativeAgent { return true }
         return false
     }
     func setDock(_ app: AppRecord, _ value: Bool) {
         if app.id == helperID { setHelperDockVisible(!value); return }
+        if app.id == tempoID { setTempoDock(app,value); return }
         if app.id != zspaceID {
             compatibilityBusy = true; busy.insert(app.id)
             compatibility.apply(id:app.id,path:app.path,hidden:value,progress:{self.notice=$0}) { success,message in
@@ -163,9 +166,68 @@ final class Manager: ObservableObject {
         UserDefaults.standard.set(Array(dockManaged).sorted(),forKey:"dockHiddenApps")
         saveRuntimeRules(); changed?(); applyZspaceRules()
     }
+    func saveTempoDock(_ hidden:Bool) {
+        if hidden {dockManaged.insert(tempoID)} else {dockManaged.remove(tempoID)}
+        UserDefaults.standard.set(Array(dockManaged).sorted(),forKey:"dockHiddenApps")
+        saveRuntimeRules(); changed?()
+    }
+    func setTempoDock(_ app:AppRecord, _ hidden:Bool) {
+        guard !busy.contains(tempoID) else {return}
+        let previous=dockManaged.contains(tempoID)
+        if tempoRuntime.isInstalled(running(tempoID)) {
+            busy.insert(tempoID);saveTempoDock(hidden)
+            tempoRuntime.waitForPolicy(hidden:hidden) {error in
+                self.busy.remove(tempoID);self.tick += 1
+                if let error=error {self.saveTempoDock(previous);self.notice=error}
+                else {self.notice=L("tempo.ready")}
+            }
+            return
+        }
+        if !hidden {saveTempoDock(false);notice=L("tempo.shown");return}
+        if let current=running(tempoID), current.bundleURL?.resolvingSymlinksInPath() != URL(fileURLWithPath:app.path).resolvingSymlinksInPath() {notice=L("error.otherCopy");return}
+        let alert=NSAlert();alert.messageText=L("tempo.consentTitle");alert.informativeText=L("tempo.consentBody")
+        alert.addButton(withTitle:L("tempo.consentAllow"));alert.addButton(withTitle:L("zspace.consentCancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else {return}
+        busy.insert(tempoID);notice=L("tempo.preparing")
+        DispatchQueue.global().async {
+            let result=Result {try self.tempoRuntime.prepare(appPath:app.path)}
+            DispatchQueue.main.async {
+                switch result {
+                case .failure(let error):self.busy.remove(tempoID);self.notice=error.localizedDescription
+                case .success(let plugins):
+                    func start() {
+                        self.saveTempoDock(true)
+                        self.tempoRuntime.launch(appPath:app.path,plugins:plugins,hidden:true) {error in
+                            if let error=error {
+                                self.saveTempoDock(previous)
+                                // A failed adapter never changes or re-signs the target app.
+                                self.compatibility.quit(tempoID) {stopped in
+                                    guard stopped else {self.busy.remove(tempoID);self.notice=L("tempo.fallbackQuitFailed",[error]);return}
+                                    NSWorkspace.shared.openApplication(at:URL(fileURLWithPath:app.path),configuration:NSWorkspace.OpenConfiguration()) {_,fallbackError in
+                                        DispatchQueue.main.async {
+                                            self.busy.remove(tempoID);self.tick += 1
+                                            self.notice=fallbackError == nil ? L("tempo.fallback",[error]) : L("error.open",[fallbackError!.localizedDescription])
+                                        }
+                                    }
+                                }
+                            } else {self.busy.remove(tempoID);self.tick += 1;self.notice=L("tempo.ready")}
+                        }
+                    }
+                    if running(tempoID) != nil {
+                        self.notice=L("tempo.restarting")
+                        self.compatibility.quit(tempoID) {stopped in
+                            if stopped {start()}
+                            else {self.busy.remove(tempoID);self.notice=L("tempo.quitFailed")}
+                        }
+                    } else {start()}
+                }
+            }
+        }
+    }
     func dockHelp(_ app: AppRecord) -> String {
         if app.id == helperID {return L("self.dockHelp")}
         if app.id == zspaceID {return L("dock.helpInstant")}
+        if app.id == tempoID {return L("tempo.dockHelp")}
         if let reason = compatibility.reason(app.path) {return reason}
         return L("dock.helpRestart")
     }
@@ -173,17 +235,19 @@ final class Manager: ObservableObject {
         if app.id == helperID {return helperDockVisible ? L("dock.shown") : L("dock.hidden")}
         if let current = running(app.id) { return current.activationPolicy == .regular ? L("dock.shown") : L("dock.hidden") }
         if app.id == zspaceID { return L("dock.openToApply") }
-        if app.id == tempoID { return L("dock.saved") }
+        if app.id == tempoID { return L("tempo.openToApply") }
         if app.nativeAgent { return L("dock.native") }
         if let setting = compatibility.active[app.id] {return setting.hidden ? L("dock.savedHidden") : L("dock.savedShown")}
         return L("dock.restartNeeded")
     }
     func open(_ app: AppRecord) {
+        if app.id == tempoID && dockManaged.contains(tempoID) && !tempoRuntime.isInstalled(running(tempoID)) {setTempoDock(app,true);return}
         if app.id == zspaceID { launchZspace(hide:false); return }
         if let current = running(app.id) {
             current.unhide()
             _ = AXUIElementSetAttributeValue(AXUIElementCreateApplication(current.processIdentifier), kAXHiddenAttribute as CFString, kCFBooleanFalse)
             current.activate(options:[.activateAllWindows])
+            if app.id == tempoID {return}
         }
         NSWorkspace.shared.openApplication(at:URL(fileURLWithPath:app.path), configuration:NSWorkspace.OpenConfiguration()) { _, error in
             if let error = error { DispatchQueue.main.async { self.notice = L("error.open", [String(describing: error.localizedDescription)]) } }
@@ -377,6 +441,9 @@ struct Panel: View {
                                 Image(nsImage:app.icon).resizable().frame(width:32,height:32)
                                 VStack(alignment:.leading,spacing:4) {
                                     Text(app.displayName).font(.system(size:13,weight:.medium)).lineLimit(1)
+                                    if app.id == tempoID {
+                                        Text(L("tempo.dockLabel")).font(.system(size:10)).foregroundStyle(.secondary)
+                                    }
                                     HStack(spacing:5) {
                                         Circle().fill(running(app.id) == nil ? Color.gray.opacity(0.35) : accent).frame(width:5,height:5)
                                         Text(running(app.id) == nil ? L("status.stopped") : L("status.running")).font(.system(size:10)).foregroundStyle(.secondary)
@@ -393,7 +460,7 @@ struct Panel: View {
                                 .help(app.id == helperID ? L("self.closeHelp") : L("close.help"))
                             Toggle(L("accessibility.dock", [String(describing: app.displayName)]),isOn:Binding(get:{!model.dockEnabled(app)},set:{model.setDock(app,!$0)}))
                                 .labelsHidden().toggleStyle(.switch).tint(.blue).controlSize(.regular).frame(width:120)
-                                .disabled(model.compatibilityBusy || model.compatibility.busy || model.busy.contains(app.id) || (app.id != zspaceID && app.id != helperID && model.compatibility.reason(app.path) != nil)).help(model.dockHelp(app))
+                                .disabled(model.compatibilityBusy || model.compatibility.busy || model.busy.contains(app.id) || (app.id != zspaceID && app.id != helperID && app.id != tempoID && model.compatibility.reason(app.path) != nil)).help(model.dockHelp(app))
                         }.padding(.horizontal,26).padding(.vertical,12)
                         Divider().padding(.horizontal,26)
                     }

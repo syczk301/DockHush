@@ -498,5 +498,77 @@
   "zspace.quitFailed": {
     "zh-Hans": "极空间未正常退出，设置尚未生效。请保存工作并处理退出提示后重试。",
     "en": "ZSpace did not quit normally; settings are not active. Save your work, resolve any quit prompts, and retry."
+  },
+  "tempo.dockUnsupported": {
+    "zh-Hans": "TempoHub 必须使用运行时适配；禁止旧式修改和备份回写，以保护厂商签名。",
+    "en": "TempoHub requires runtime integration. Legacy configuration edits and backup replay are blocked to preserve the vendor signature."
+  },
+  "tempo.dockLabel": {
+    "zh-Hans": "运行时 Dock 适配 · 不改应用文件",
+    "en": "Runtime Dock control · app files unchanged"
+  },
+  "tempo.adapterMissing": {
+    "zh-Hans": "未找到 TempoHub 适配组件，请重新构建 DockHush。",
+    "en": "TempoHub adapter is missing. Rebuild DockHush."
+  },
+  "tempo.qtUnsupported": {
+    "zh-Hans": "此版本 TempoHub 的 Qt 插件不在已支持范围；未修改或重启应用。",
+    "en": "This TempoHub Qt plugin version is unsupported; the app was not modified or restarted."
+  },
+  "tempo.signatureInvalid": {
+    "zh-Hans": "TempoHub 厂商签名校验失败，已停止适配：{0}",
+    "en": "TempoHub vendor signature verification failed; integration stopped: {0}"
+  },
+  "tempo.runtimeFailed": {
+    "zh-Hans": "未能确认 TempoHub 的运行时 Dock 状态。",
+    "en": "Could not verify TempoHub runtime Dock state."
+  },
+  "tempo.ready": {
+    "zh-Hans": "TempoHub 运行时适配已就绪，Dock 设置已生效；厂商应用文件未修改。",
+    "en": "TempoHub runtime integration is ready; Dock settings applied without changing vendor app files."
+  },
+  "tempo.shown": {
+    "zh-Hans": "TempoHub 已设为显示 Dock 图标；厂商应用文件未修改。",
+    "en": "TempoHub is set to show its Dock icon; vendor app files are unchanged."
+  },
+  "tempo.consentTitle": {
+    "zh-Hans": "启用 TempoHub 运行时 Dock 适配？",
+    "en": "Enable TempoHub runtime Dock control?"
+  },
+  "tempo.consentBody": {
+    "zh-Hans": "请先保存工作。确认后会正常退出并重新启动 TempoHub，通过 Qt 外置扩展入口加载 Dock 控制组件。组件在 TempoHub 进程内运行，可访问该进程数据，但本组件只读取 DockHush 规则并切换 Dock 状态。不会修改或重签厂商应用，也不开放调试端口。适配失败时尝试恢复普通启动。",
+    "en": "Save your work first. TempoHub will quit and relaunch with an external Qt extension. It runs inside TempoHub and can access process data, but only reads DockHush rules and changes Dock state. It does not modify or re-sign the vendor app or open a debugger. Failed integration attempts a normal-launch fallback."
+  },
+  "tempo.consentAllow": {
+    "zh-Hans": "启用并重新打开",
+    "en": "Enable and relaunch"
+  },
+  "tempo.preparing": {
+    "zh-Hans": "正在验证 TempoHub 厂商签名并准备外置组件…",
+    "en": "Verifying TempoHub vendor signature and preparing the external adapter…"
+  },
+  "tempo.restarting": {
+    "zh-Hans": "正在正常退出并重新启动 TempoHub…",
+    "en": "Quitting and relaunching TempoHub…"
+  },
+  "tempo.quitFailed": {
+    "zh-Hans": "TempoHub 未正常退出，已停止适配。请处理退出提示后重试。",
+    "en": "TempoHub did not quit normally. Integration stopped; resolve any quit prompts and retry."
+  },
+  "tempo.fallback": {
+    "zh-Hans": "TempoHub 适配未通过，已恢复普通启动：{0}",
+    "en": "TempoHub integration failed; normal launch restored: {0}"
+  },
+  "tempo.fallbackQuitFailed": {
+    "zh-Hans": "TempoHub 适配未通过，但应用未能正常退出；请手动退出后普通启动：{0}",
+    "en": "TempoHub integration failed and the app did not quit normally. Quit it manually, then launch normally: {0}"
+  },
+  "tempo.dockHelp": {
+    "zh-Hans": "开启显示，关闭隐藏。首次接管需确认重启；之后直接生效，不修改应用签名。",
+    "en": "On shows the icon; off hides it. First use requires a confirmed relaunch; later changes apply directly without changing the app signature."
+  },
+  "tempo.openToApply": {
+    "zh-Hans": "通过 DockHush 打开以应用运行时 Dock 设置。",
+    "en": "Open through DockHush to apply runtime Dock settings."
   }
 }

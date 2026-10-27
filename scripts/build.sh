@@ -9,12 +9,18 @@ xcrun swift -module-cache-path build/module-cache scripts/make-icon.swift
 python3 scripts/pack-icon.py
 for arch in arm64 x86_64; do
   xcrun swiftc -O -swift-version 5 -target "$arch-apple-macos13.0" \
-    -module-cache-path build/module-cache Sources/main.swift Sources/DockCompatibility.swift Sources/Localization.swift \
+    -module-cache-path build/module-cache Sources/main.swift Sources/DockCompatibility.swift Sources/TempoRuntime.swift Sources/Localization.swift \
     -o "build/DockHush-$arch" -framework SwiftUI -framework AppKit -framework ApplicationServices
+done
+for arch in arm64 x86_64; do
+  xcrun clang++ -dynamiclib -arch "$arch" -mmacosx-version-min=13.0 -fobjc-arc -std=c++17 -framework AppKit \
+    Resources/tempo-dock-plugin.mm -o "build/TempoDockPlugin-$arch.dylib"
 done
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 lipo -create build/DockHush-arm64 build/DockHush-x86_64 -output "$APP/Contents/MacOS/DockHush"
 cp -R Resources/. "$APP/Contents/Resources/"
+lipo -create build/TempoDockPlugin-arm64.dylib build/TempoDockPlugin-x86_64.dylib -output "$APP/Contents/Resources/TempoDockPlugin.dylib"
+codesign --force --sign "$SIGN_IDENTITY" "$APP/Contents/Resources/TempoDockPlugin.dylib"
 cp build/DockHush.icns "$APP/Contents/Resources/PolishedHelper.icns"
 cp build/StatusMoon.png "$APP/Contents/Resources/StatusMoon.png"
 python3 - "$VERSION" "$APP" <<'PY'

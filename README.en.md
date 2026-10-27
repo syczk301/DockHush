@@ -34,6 +34,12 @@ For ordinary apps, Dock controls edit `Contents/Info.plist` → `LSUIElement` an
 
 A check verifies process survival and the resulting activation policy. Apps may later override their Dock state. Failed changes restore the previous file and attempt to reopen apps that were running. Interrupted transactions are examined on the next launch. App updates or conflicting edits stop automatic restoration rather than overwriting newer files; use View Details to locate the backup.
 
+### TempoHub runtime integration
+
+Verified with TempoHub 1.3.0 / Qt 6.7 on Apple Silicon: an optional external Qt extension changes Dock state inside the process without modifying Info.plist, executables, or the vendor signature, and without opening a debugger. First use requires a confirmed quit and relaunch through DockHush; later show/hide changes apply directly. Hide on Close remains an independent Accessibility integration. After fully quitting TempoHub, reopen it through DockHush to load the adapter again. Normal Finder launches always use the original vendor app.
+
+Setup validates the vendor signature and Qt plugin version. Unsupported updates stop safely; failed integration attempts a normal-launch fallback. Legacy configuration edits and backup replay remain blocked. Adapter copies and state are stored under `~/Library/Application Support/DockHush/TempoRuntime/` and `tempo-session.json`.
+
 ### Optional ZSpace integration
 
 The adapter expects `/Applications/极空间.app` and **Node.js 22+**, found in standard Homebrew locations or process PATH. Other features do not require Node.js.

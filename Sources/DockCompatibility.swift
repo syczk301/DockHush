@@ -41,6 +41,11 @@ final class DockCompatibility {
     }
     func reason(_ path: String) -> String? {
         let url = plist(path)
+        if let data = try? Data(contentsOf:url),
+           let info = try? PropertyListSerialization.propertyList(from:data,format:nil) as? [String:Any],
+           info["CFBundleIdentifier"] as? String == "com.edifier.connectHD" {
+            return L("tempo.dockUnsupported")
+        }
         let resolved = URL(fileURLWithPath:path).resolvingSymlinksInPath().path
         if resolved.hasPrefix("/System/") || resolved.hasPrefix("/Library/Apple/") {return L("error.protected")}
         if (try? url.resourceValues(forKeys:[.isSymbolicLinkKey]).isSymbolicLink) == true {return L("error.symlink")}
@@ -94,6 +99,8 @@ final class DockCompatibility {
     }
     func apply(id:String, path:String, hidden:Bool, progress:@escaping(String)->Void, completion:@escaping(Bool,String)->Void) {
         guard !busy else {completion(false,L("error.busy"));return}
+        // TempoHub's vendor signature seals Info.plist. Never patch or replay it.
+        guard id != "com.edifier.connectHD" else {completion(false,L("tempo.dockUnsupported"));return}
         if let why = reason(path) {completion(false,why);return}
         if instances(id).contains(where:{$0.bundleURL?.resolvingSymlinksInPath() != URL(fileURLWithPath:path).resolvingSymlinksInPath()}) {
             completion(false,L("error.otherCopy"));return
@@ -158,6 +165,7 @@ final class DockCompatibility {
             self.pending.removeAll{$0.0==dir}; self.pending.append((dir,record))
             completion(false,L("result.backup",[message,dir.path]))
         }
+        guard record.id != "com.edifier.connectHD" else {conflict(L("tempo.dockUnsupported"));return}
         do {
             guard !instances(record.id).contains(where:{$0.bundleURL?.resolvingSymlinksInPath() != URL(fileURLWithPath:record.path).resolvingSymlinksInPath()}) else {conflict(L("error.pathChanged"));return}
             let current=try Data(contentsOf:plist(record.path))
