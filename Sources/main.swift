@@ -49,6 +49,7 @@ final class Manager: ObservableObject {
     @Published var busy: Set<String> = []
     let compatibility = DockCompatibility()
     let tempoRuntime = TempoRuntime()
+    let kugouRuntime = KugouRuntime()
     @Published var compatibilityBusy = false
     var changed: (() -> Void)?
     init() {
@@ -63,7 +64,7 @@ final class Manager: ObservableObject {
             (query.isEmpty || $0.displayName.localizedCaseInsensitiveContains(query) || $0.id.localizedCaseInsensitiveContains(query)) &&
             (filter != "configured" || configured.contains($0.id)) &&
             (filter != "running" || running($0.id) != nil) &&
-            (filter != "dock" || $0.id == helperID || $0.id == zspaceID || $0.id == tempoID || compatibility.reason($0.path) == nil)
+            (filter != "dock" || $0.id == helperID || $0.id == zspaceID || $0.id == tempoID || $0.id == KugouRuntime.id || compatibility.reason($0.path) == nil)
         }
     }
     func setHelperDockVisible(_ visible: Bool) {
@@ -141,7 +142,7 @@ final class Manager: ObservableObject {
         if app.id == helperID { return !helperDockVisible }
         if app.id == zspaceID { return dockManaged.contains(app.id) }
         if let current = running(app.id) {return current.activationPolicy != .regular}
-        if app.id == tempoID { return dockManaged.contains(app.id) }
+        if app.id == tempoID || app.id == KugouRuntime.id { return dockManaged.contains(app.id) }
         if let setting = compatibility.active[app.id] {return setting.hidden}
         if app.nativeAgent { return true }
         return false
@@ -149,6 +150,7 @@ final class Manager: ObservableObject {
     func setDock(_ app: AppRecord, _ value: Bool) {
         if app.id == helperID { setHelperDockVisible(!value); return }
         if app.id == tempoID { setTempoDock(app,value); return }
+        if app.id == KugouRuntime.id { setKugouDock(app,value); return }
         if app.id != zspaceID {
             compatibilityBusy = true; busy.insert(app.id)
             compatibility.apply(id:app.id,path:app.path,hidden:value,progress:{self.notice=$0}) { success,message in
@@ -224,10 +226,53 @@ final class Manager: ObservableObject {
             }
         }
     }
+    func setKugouDock(_ app:AppRecord, _ hidden:Bool) {
+        let id=KugouRuntime.id
+        guard !busy.contains(id) else {return}
+        let target=URL(fileURLWithPath:app.path).resolvingSymlinksInPath()
+        if NSRunningApplication.runningApplications(withBundleIdentifier:id).contains(where:{$0.bundleURL?.resolvingSymlinksInPath() != target}) {notice=L("error.otherCopy");return}
+        func save() {
+            if hidden {self.dockManaged.insert(id)} else {self.dockManaged.remove(id)}
+            UserDefaults.standard.set(Array(self.dockManaged).sorted(),forKey:"dockHiddenApps")
+            self.saveRuntimeRules();self.changed?()
+        }
+        if let current=running(id),current.activationPolicy == (hidden ? .accessory : .regular) {save();notice=L("kugou.ready");return}
+        if !hidden && running(id)==nil {save();notice=L("kugou.ready");return}
+        busy.insert(id);notice=L("kugou.preparing")
+        kugouRuntime.preflight(path:app.path,hidden:hidden) {error in
+            if let error=error {self.busy.remove(id);self.notice=error;return}
+            func start() {
+                self.kugouRuntime.apply(path:app.path,hidden:hidden) {error,attempted in
+                    self.tick += 1
+                    if let error=error {
+                        guard attempted else {self.busy.remove(id);self.notice=error;return}
+                        // Restore ordinary launch behavior after an unsuccessful agent launch.
+                        let config=NSWorkspace.OpenConfiguration();config.activates=false;config.allowsRunningApplicationSubstitution=false
+                        NSWorkspace.shared.openApplication(at:target,configuration:config) {_,fallbackError in
+                            DispatchQueue.main.async {
+                                self.busy.remove(id)
+                                self.notice=fallbackError==nil ? L("kugou.fallback",[error]) : L("error.open",[fallbackError!.localizedDescription])
+                            }
+                        }
+                    } else {save();self.busy.remove(id);self.notice=L("kugou.ready")}
+                }
+            }
+            if hidden && running(id) != nil {
+                let alert=NSAlert();alert.messageText=L("kugou.consentTitle");alert.informativeText=L("kugou.consentBody")
+                alert.addButton(withTitle:L("tempo.consentAllow"));alert.addButton(withTitle:L("zspace.consentCancel"))
+                guard alert.runModal() == .alertFirstButtonReturn else {self.busy.remove(id);return}
+                self.notice=L("kugou.restarting")
+                self.kugouRuntime.quit() {stopped in
+                    if stopped {start()} else {self.busy.remove(id);self.notice=L("error.quitTimeout")}
+                }
+            } else {start()}
+        }
+    }
     func dockHelp(_ app: AppRecord) -> String {
         if app.id == helperID {return L("self.dockHelp")}
         if app.id == zspaceID {return L("dock.helpInstant")}
         if app.id == tempoID {return L("tempo.dockHelp")}
+        if app.id == KugouRuntime.id {return L("kugou.dockHelp")}
         if let reason = compatibility.reason(app.path) {return reason}
         return L("dock.helpRestart")
     }
@@ -236,18 +281,20 @@ final class Manager: ObservableObject {
         if let current = running(app.id) { return current.activationPolicy == .regular ? L("dock.shown") : L("dock.hidden") }
         if app.id == zspaceID { return L("dock.openToApply") }
         if app.id == tempoID { return L("tempo.openToApply") }
+        if app.id == KugouRuntime.id { return dockManaged.contains(app.id) ? L("dock.savedHidden") : L("dock.savedShown") }
         if app.nativeAgent { return L("dock.native") }
         if let setting = compatibility.active[app.id] {return setting.hidden ? L("dock.savedHidden") : L("dock.savedShown")}
         return L("dock.restartNeeded")
     }
     func open(_ app: AppRecord) {
+        if app.id == KugouRuntime.id && dockManaged.contains(app.id) && running(app.id)==nil {setKugouDock(app,true);return}
         if app.id == tempoID && dockManaged.contains(tempoID) && !tempoRuntime.isInstalled(running(tempoID)) {setTempoDock(app,true);return}
         if app.id == zspaceID { launchZspace(hide:false); return }
         if let current = running(app.id) {
             current.unhide()
             _ = AXUIElementSetAttributeValue(AXUIElementCreateApplication(current.processIdentifier), kAXHiddenAttribute as CFString, kCFBooleanFalse)
             current.activate(options:[.activateAllWindows])
-            if app.id == tempoID {return}
+            if app.id == tempoID || (app.id == KugouRuntime.id && current.activationPolicy == .accessory) {return}
         }
         NSWorkspace.shared.openApplication(at:URL(fileURLWithPath:app.path), configuration:NSWorkspace.OpenConfiguration()) { _, error in
             if let error = error { DispatchQueue.main.async { self.notice = L("error.open", [String(describing: error.localizedDescription)]) } }
@@ -323,6 +370,9 @@ func interceptedApp(_ point: CGPoint) -> String? {
         var subrole: CFTypeRef?
         AXUIElementCopyAttributeValue(hit,kAXSubroleAttribute as CFString,&subrole)
         if subrole as? String == kAXCloseButtonSubrole {return id}
+        if id == KugouCloseButton.id {
+            return KugouCloseButton.matches(hit:hit,point:point,pid:pid) ? id : nil
+        }
         if id != tempoID {return nil}
     }
     // TempoHub draws its own red close button; use its existing verified adapter.
@@ -441,6 +491,9 @@ struct Panel: View {
                                 Image(nsImage:app.icon).resizable().frame(width:32,height:32)
                                 VStack(alignment:.leading,spacing:4) {
                                     Text(app.displayName).font(.system(size:13,weight:.medium)).lineLimit(1)
+                                    if app.id == KugouCloseButton.id {
+                                        Text(L("kugou.label")).font(.system(size:10)).foregroundStyle(.secondary)
+                                    }
                                     if app.id == tempoID {
                                         Text(L("tempo.dockLabel")).font(.system(size:10)).foregroundStyle(.secondary)
                                     }
@@ -460,7 +513,7 @@ struct Panel: View {
                                 .help(app.id == helperID ? L("self.closeHelp") : L("close.help"))
                             Toggle(L("accessibility.dock", [String(describing: app.displayName)]),isOn:Binding(get:{!model.dockEnabled(app)},set:{model.setDock(app,!$0)}))
                                 .labelsHidden().toggleStyle(.switch).tint(.blue).controlSize(.regular).frame(width:120)
-                                .disabled(model.compatibilityBusy || model.compatibility.busy || model.busy.contains(app.id) || (app.id != zspaceID && app.id != helperID && app.id != tempoID && model.compatibility.reason(app.path) != nil)).help(model.dockHelp(app))
+                                .disabled(model.compatibilityBusy || model.compatibility.busy || model.busy.contains(app.id) || (app.id != zspaceID && app.id != helperID && app.id != tempoID && app.id != KugouRuntime.id && model.compatibility.reason(app.path) != nil)).help(model.dockHelp(app))
                         }.padding(.horizontal,26).padding(.vertical,12)
                         Divider().padding(.horizontal,26)
                     }

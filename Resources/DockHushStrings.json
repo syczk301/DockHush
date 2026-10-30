@@ -570,5 +570,61 @@
   "tempo.openToApply": {
     "zh-Hans": "通过 DockHush 打开以应用运行时 Dock 设置。",
     "en": "Open through DockHush to apply runtime Dock settings."
+  },
+  "kugou.label": {
+    "en": "Signature-preserving Dock control",
+    "zh-Hans": "保留原签名的 Dock 控制"
+  },
+  "kugou.dockUnsupported": {
+    "en": "Kugou uses runtime launch options. Editing its signed configuration or restoring old plist backups is disabled.",
+    "zh-Hans": "酷狗使用运行时启动选项控制 Dock，禁止修改签名包内配置或回写旧 plist 备份。"
+  },
+  "kugou.systemUnsupported": {
+    "en": "This macOS version does not expose the required Kugou launch option. No app files were changed.",
+    "zh-Hans": "当前 macOS 不提供酷狗适配所需的启动选项，未修改应用文件。"
+  },
+  "kugou.versionUnsupported": {
+    "en": "This adapter supports Kugou 20.3.8 (3898). This copy is not supported.",
+    "zh-Hans": "当前适配已验证酷狗 20.3.8（3898），此应用版本暂不支持。"
+  },
+  "kugou.signatureInvalid": {
+    "en": "Kugou vendor signature validation failed. Operation stopped.",
+    "zh-Hans": "酷狗厂商签名验证失败，操作已停止。"
+  },
+  "kugou.launchConflict": {
+    "en": "Kugou started again or another copy is running. Retry after closing it normally.",
+    "zh-Hans": "酷狗已再次启动或存在另一份运行副本，请正常退出后重试。"
+  },
+  "kugou.policyFailed": {
+    "en": "Kugou did not maintain the requested Dock state.",
+    "zh-Hans": "酷狗未能保持所请求的 Dock 状态。"
+  },
+  "kugou.dockHelp": {
+    "en": "Hiding requires a normal quit and restart; showing works immediately. App files and signatures stay intact.",
+    "zh-Hans": "隐藏需正常退出并重启酷狗；显示直接生效。不修改应用文件或签名。"
+  },
+  "kugou.ready": {
+    "en": "Kugou Dock setting applied. Vendor app files were not modified.",
+    "zh-Hans": "酷狗 Dock 设置已生效，厂商应用文件未修改。"
+  },
+  "kugou.preparing": {
+    "en": "Checking Kugou version, signature and launch support…",
+    "zh-Hans": "正在检查酷狗版本、签名和启动支持…"
+  },
+  "kugou.consentTitle": {
+    "en": "Restart Kugou to hide its Dock icon?",
+    "zh-Hans": "重启酷狗以隐藏 Dock 图标？"
+  },
+  "kugou.consentBody": {
+    "en": "Kugou must quit normally and reopen. Playback will be interrupted. No app files are modified. Use DockHush to reopen its hidden window; Finder or other launchers may restore the icon. Continue?",
+    "zh-Hans": "需要正常退出并重新打开酷狗，当前播放会中断。不修改酷狗文件。隐藏后请通过 DockHush 打开窗口；访达或其他启动器可能使图标重新出现。是否继续？"
+  },
+  "kugou.fallback": {
+    "en": "Dock control failed: {0} Ordinary opening was requested; previous preferences were retained.",
+    "zh-Hans": "Dock 控制失败：{0} 已请求普通方式打开，原偏好设置保留。"
+  },
+  "kugou.restarting": {
+    "en": "Waiting for Kugou to quit normally (up to 45 seconds)...",
+    "zh-Hans": "正在等待酷狗正常退出（最多 45 秒）…"
   }
 }

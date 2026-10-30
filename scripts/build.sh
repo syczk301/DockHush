@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-VERSION="${VERSION:-0.1.0}"
+VERSION="${VERSION:-$(cat VERSION)}"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 APP="build/DockHush.app"
 mkdir -p build/module-cache build/PolishedHelper.iconset
@@ -9,7 +9,7 @@ xcrun swift -module-cache-path build/module-cache scripts/make-icon.swift
 python3 scripts/pack-icon.py
 for arch in arm64 x86_64; do
   xcrun swiftc -O -swift-version 5 -target "$arch-apple-macos13.0" \
-    -module-cache-path build/module-cache Sources/main.swift Sources/DockCompatibility.swift Sources/TempoRuntime.swift Sources/Localization.swift \
+    -module-cache-path build/module-cache Sources/main.swift Sources/DockCompatibility.swift Sources/TempoRuntime.swift Sources/CloseButton.swift Sources/KugouRuntime.swift Sources/Localization.swift \
     -o "build/DockHush-$arch" -framework SwiftUI -framework AppKit -framework ApplicationServices
 done
 for arch in arm64 x86_64; do

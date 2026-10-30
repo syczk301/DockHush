@@ -22,5 +22,8 @@ Show in Dock: on shows the icon, off hides it. Some apps restart; save your work
 极空间的可选运行时适配需要 Node.js 22+，且会在启用前单独询问。
 The optional ZSpace runtime integration requires Node.js 22+ and asks before activation.
 
+酷狗音乐 Dock 适配支持 20.3.8（3898），隐藏时需正常重启，会中断播放；隐藏后请通过 DockHush 打开窗口。其他启动器可能恢复图标。此适配不修改酷狗文件或签名，但依赖 macOS 非公开接口，系统更新后可能失效。
+Kugou Dock support targets 20.3.8 (3898). Hiding requires a normal restart and interrupts playback. Reopen through DockHush; other launchers may restore the icon. Kugou files and signatures remain unchanged, but this uses a private macOS interface that may break after updates.
+
 源码、限制与恢复说明 / Source, limitations and recovery:
 https://github.com/syczk301/DockHush

@@ -1,9 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-VERSION="${VERSION:-0.1.0}"
+VERSION="${VERSION:-$(cat VERSION)}"
 APP='build/DockHush.app'
 [ -d "$APP" ] || { echo 'Run scripts/build.sh first.' >&2; exit 1; }
+BUILT_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist")
+[ "$BUILT_VERSION" = "$VERSION" ] || { echo "Version mismatch: app=$BUILT_VERSION package=$VERSION" >&2; exit 1; }
 codesign --verify --strict "$APP"
 mkdir -p dist
 DMG="dist/DockHush-$VERSION-universal.dmg"

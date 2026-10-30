@@ -16,7 +16,7 @@ macOS 菜单栏工具，分别控制应用的关闭行为与 Dock 图标。原�
 
 ## 安装
 
-1. 在 [Releases](https://github.com/syczk301/DockHush/releases) 下载 `DockHush-0.1.0-universal.dmg`。
+1. 在 [Releases](https://github.com/syczk301/DockHush/releases) 下载 `DockHush-0.2.0-universal.dmg`。
 2. 打开磁盘映像，将 `DockHush.app` 拖入 `Applications`，弹出映像后启动应用。
 3. 按需授权：**辅助功能**用于关闭时隐藏；**App 管理**用于修改部分第三方应用配置。这两项是系统级权限，请按实际需要开启。
 4. 首次运行不预选第三方应用。按需设置列表中的两个开关。
@@ -49,6 +49,16 @@ macOS 菜单栏工具，分别控制应用的关闭行为与 Dock 图标。原�
 
 启用前验证厂商签名和 Qt 插件版本；不支持的更新会安全停止，加载失败尝试恢复普通启动。旧式配置修改及备份回写持续被禁止。外置组件副本和会话记录保存在 `~/Library/Application Support/DockHush/TempoRuntime/`、`tempo-session.json`。
 
+### 酷狗音乐
+
+酷狗音乐 20.3.8（Mac Catalyst）的关闭按钮命中可能缺少辅助功能子角色。适配会核对同一进程的鼠标命中按钮与窗口公开的关闭按钮位置、大小，仅精确匹配时隐藏应用；最小化、缩放及内容区按钮仍由酷狗处理。需要辅助功能权限。
+
+已在本机酷狗 20.3.8 / Apple Silicon / macOS 26 完成实体鼠标验证：点击红色关闭按钮后，同一 PID 保持运行、应用进入隐藏状态、可见窗口数为 0；从 DockHush 重新打开后同一进程恢复窗口；⌘Q 可正常退出。未验证播放中的音频连续性、Intel 或其他酷狗版本。新构建可能需要在系统设置中移除旧辅助功能授权条目，再重新添加当前应用。
+
+Dock 图标通过 Launch Services 的 UIElement 启动选项控制，不修改酷狗安装包或原签名。隐藏时需要确认正常退出并重开，当前播放会中断；恢复显示可在同一进程内生效。“关闭时隐藏”保持独立。隐藏后请通过 DockHush 的“打开应用”恢复窗口；从访达、Dock 或其他启动器重开时，酷狗自身可能恢复显示图标。完全退出后，需通过 DockHush 打开才能继续使用已保存的隐藏设置。
+
+当前仅放行酷狗 20.3.8（3898），启用前验证厂商签名。此适配使用 macOS 非公开启动接口，系统更新可能导致失效；接口缺失、版本不符、另一份应用正在运行或退出超时都会停止。启动后的 Dock 状态会实际检查，失败尝试普通打开，且不写回旧配置备份。
+
 ### 极空间（可选）
 
 仅针对安装在 `/Applications/极空间.app` 的桌面客户端。需要 **Node.js 22+**，支持 Homebrew 常见路径和进程 PATH。其他功能不依赖 Node.js。
@@ -79,8 +89,8 @@ cd DockHush
 ./scripts/package-dmg.sh
 ```
 
-输出：`build/DockHush.app`、`dist/DockHush-0.1.0-universal.dmg` 及 SHA-256 文件。
-构建脚本依次编译 arm64 与 x86_64，再合并为 Universal。`VERSION=0.1.0` 可指定版本。默认临时签名；维护者可通过 `SIGN_IDENTITY` 指定自己的 Developer ID，但公证需要单独完成。
+输出：`build/DockHush.app`、`dist/DockHush-0.2.0-universal.dmg` 及 SHA-256 文件。
+构建脚本依次编译 arm64 与 x86_64，再合并为 Universal。默认版本读取根目录 `VERSION`；构建和打包时均可通过环境变量 `VERSION` 覆盖，打包会核对应用版本。默认临时签名；维护者可通过 `SIGN_IDENTITY` 指定自己的 Developer ID，但公证需要单独完成。
 
 项目结构：`Sources/` 原生应用与恢复引擎；`Resources/` 双语文本及可选运行时脚本；`scripts/` 构建、检查与打包；`Tests/` 隔离测试。
 

@@ -43,8 +43,9 @@ final class DockCompatibility {
         let url = plist(path)
         if let data = try? Data(contentsOf:url),
            let info = try? PropertyListSerialization.propertyList(from:data,format:nil) as? [String:Any],
-           info["CFBundleIdentifier"] as? String == "com.edifier.connectHD" {
-            return L("tempo.dockUnsupported")
+           let id = info["CFBundleIdentifier"] as? String {
+            if id == "com.edifier.connectHD" {return L("tempo.dockUnsupported")}
+            if id == "com.kugou.mac.Music" {return L("kugou.dockUnsupported")}
         }
         let resolved = URL(fileURLWithPath:path).resolvingSymlinksInPath().path
         if resolved.hasPrefix("/System/") || resolved.hasPrefix("/Library/Apple/") {return L("error.protected")}
@@ -101,6 +102,7 @@ final class DockCompatibility {
         guard !busy else {completion(false,L("error.busy"));return}
         // TempoHub's vendor signature seals Info.plist. Never patch or replay it.
         guard id != "com.edifier.connectHD" else {completion(false,L("tempo.dockUnsupported"));return}
+        guard id != "com.kugou.mac.Music" else {completion(false,L("kugou.dockUnsupported"));return}
         if let why = reason(path) {completion(false,why);return}
         if instances(id).contains(where:{$0.bundleURL?.resolvingSymlinksInPath() != URL(fileURLWithPath:path).resolvingSymlinksInPath()}) {
             completion(false,L("error.otherCopy"));return
@@ -166,6 +168,7 @@ final class DockCompatibility {
             completion(false,L("result.backup",[message,dir.path]))
         }
         guard record.id != "com.edifier.connectHD" else {conflict(L("tempo.dockUnsupported"));return}
+        guard record.id != "com.kugou.mac.Music" else {conflict(L("kugou.dockUnsupported"));return}
         do {
             guard !instances(record.id).contains(where:{$0.bundleURL?.resolvingSymlinksInPath() != URL(fileURLWithPath:record.path).resolvingSymlinksInPath()}) else {conflict(L("error.pathChanged"));return}
             let current=try Data(contentsOf:plist(record.path))

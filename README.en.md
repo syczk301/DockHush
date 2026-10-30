@@ -16,7 +16,7 @@ A native SwiftUI/AppKit menu bar utility for macOS. Control app closing behavior
 
 ## Install
 
-Download `DockHush-0.1.0-universal.dmg` from [Releases](https://github.com/syczk301/DockHush/releases), drag the app into Applications, eject the image, and launch the installed app.
+Download `DockHush-0.2.0-universal.dmg` from [Releases](https://github.com/syczk301/DockHush/releases), drag the app into Applications, eject the image, and launch the installed app.
 
 The build targets **macOS 13+, Apple Silicon and Intel**. Runtime testing was performed on Apple Silicon / macOS 26. Intel and older macOS versions are cross-compiled targets, not yet tested on hardware.
 
@@ -39,6 +39,16 @@ A check verifies process survival and the resulting activation policy. Apps may 
 Verified with TempoHub 1.3.0 / Qt 6.7 on Apple Silicon: an optional external Qt extension changes Dock state inside the process without modifying Info.plist, executables, or the vendor signature, and without opening a debugger. First use requires a confirmed quit and relaunch through DockHush; later show/hide changes apply directly. Hide on Close remains an independent Accessibility integration. After fully quitting TempoHub, reopen it through DockHush to load the adapter again. Normal Finder launches always use the original vendor app.
 
 Setup validates the vendor signature and Qt plugin version. Unsupported updates stop safely; failed integration attempts a normal-launch fallback. Legacy configuration edits and backup replay remain blocked. Adapter copies and state are stored under `~/Library/Application Support/DockHush/TempoRuntime/` and `tempo-session.json`.
+
+### Kugou Music
+
+Kugou Music 20.3.8 (Mac Catalyst) can omit the close-button subrole during accessibility hit testing. The adapter compares the hit button with the same process’s published window close button, using its exact position and size. Only a matching close button hides the app; minimize, zoom and content buttons retain their normal behavior. Accessibility permission is required.
+
+Verified with a physical mouse click on Kugou 20.3.8 / Apple Silicon / macOS 26: the red close button hides the app with the same PID alive and zero visible windows; opening it through DockHush restores the window in the same process; Command-Q exits normally. Audio playback continuity, Intel hardware and other Kugou versions have not been verified. A rebuilt app may require removing its old Accessibility entry and adding the current app again.
+
+Dock control uses the Launch Services UIElement launch option without modifying Kugou or its vendor signature. Hiding requires confirmation to quit and reopen normally, interrupting playback; showing can take effect in the same process. Close-to-hide remains independent. Use DockHush's Open Application action to restore a hidden window: Finder, the Dock or other launchers may cause Kugou to show its icon again. After a full quit, launch through DockHush to apply the saved hidden setting.
+
+Only Kugou 20.3.8 (3898) is currently allowed, with vendor signature validation before use. This adapter uses a private macOS launch interface that may stop working after system updates. Missing interfaces, unsupported versions, another running copy or a quit timeout stop the operation. Dock state is checked after launch; failures attempt ordinary opening and never replay old configuration backups.
 
 ### Optional ZSpace integration
 
@@ -66,7 +76,7 @@ cd DockHush
 ./scripts/package-dmg.sh
 ```
 
-Outputs: `build/DockHush.app`, `dist/DockHush-0.1.0-universal.dmg` and its SHA-256 checksum. Both arm64 and x86_64 are built and merged. Override `VERSION` as needed. `SIGN_IDENTITY` can select your own Developer ID identity; notarization is a separate step.
+Outputs: `build/DockHush.app`, `dist/DockHush-0.2.0-universal.dmg` and its SHA-256 checksum. Both arm64 and x86_64 are built and merged. The default version comes from the root `VERSION` file. Override `VERSION` consistently for building and packaging; packaging checks the app version. `SIGN_IDENTITY` can select your own Developer ID identity; notarization is a separate step.
 
 `./scripts/test-recovery.sh` creates and launches isolated test apps under `build/` to check hide/show, rollback, interrupted recovery and external edit conflicts. It needs a logged-in macOS GUI session and does not alter installed third-party apps.
 
