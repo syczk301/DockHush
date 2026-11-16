@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
+python3 tools/sparkle/bootstrap.py
 VERSION="${VERSION:-$(cat VERSION)}"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 APP="build/DockHush.app"
@@ -9,11 +10,11 @@ xcrun swift -module-cache-path build/module-cache scripts/make-icon.swift
 python3 scripts/pack-icon.py
 for arch in arm64 x86_64; do
   xcrun swiftc -O -swift-version 5 -target "$arch-apple-macos13.0" \
-    -module-cache-path build/module-cache Sources/main.swift Sources/DockCompatibility.swift Sources/TempoRuntime.swift Sources/CloseButton.swift Sources/KugouRuntime.swift Sources/Localization.swift \
-    -o "build/DockHush-$arch" -framework SwiftUI -framework AppKit -framework ApplicationServices
+    -module-cache-path build/module-cache Sources/AppUpdater.swift Sources/main.swift Sources/DockCompatibility.swift Sources/TempoRuntime.swift Sources/CloseButton.swift Sources/KugouRuntime.swift Sources/Localization.swift \
+    -o "build/DockHush-$arch" -framework SwiftUI -F tools/sparkle/vendor -framework Sparkle -Xlinker -rpath -Xlinker @executable_path/../Frameworks -framework AppKit -framework ApplicationServices
 done
 for arch in arm64 x86_64; do
-  xcrun clang++ -dynamiclib -arch "$arch" -mmacosx-version-min=13.0 -fobjc-arc -std=c++17 -framework AppKit \
+  xcrun clang++ -dynamiclib -arch "$arch" -mmacosx-version-min=13.0 -fobjc-arc -std=c++17 -F tools/sparkle/vendor -framework Sparkle -Xlinker -rpath -Xlinker @executable_path/../Frameworks -framework AppKit \
     Resources/tempo-dock-plugin.mm -o "build/TempoDockPlugin-$arch.dylib"
 done
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
@@ -28,6 +29,7 @@ import plistlib,sys,pathlib
 info=dict(CFBundleIdentifier='io.github.syczk301.DockHush',CFBundleName='DockHush',CFBundleDisplayName='隐坞 DockHush',CFBundleExecutable='DockHush',CFBundleIconFile='PolishedHelper',CFBundlePackageType='APPL',CFBundleShortVersionString=sys.argv[1],CFBundleVersion=sys.argv[1],LSMinimumSystemVersion='13.0',LSUIElement=True,NSHighResolutionCapable=True,CFBundleLocalizations=['en','zh-Hans'],CFBundleDevelopmentRegion='en',NSHumanReadableCopyright='Copyright © 2026 syczk301. MIT License.')
 (pathlib.Path(sys.argv[2])/'Contents/Info.plist').write_bytes(plistlib.dumps(info))
 PY
+python3 tools/sparkle/bootstrap.py "$APP"
 if [ "$SIGN_IDENTITY" = '-' ]; then
   codesign --force --sign - "$APP"
 else

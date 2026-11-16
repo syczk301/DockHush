@@ -1,0 +1,9 @@
+{
+  "app": "DockHush",
+  "account": "syczk301.DockHush",
+  "publicKey": "MneGGCFyucuhM3KXwH+3asxWPbKazZBEIM2k3D9NrE0=",
+  "feedURL": "https://github.com/syczk301/DockHush/releases/download/sparkle/appcast.xml",
+  "downloadURLPrefix": "https://github.com/syczk301/DockHush/releases/download/sparkle/",
+  "version": "0.3.0",
+  "bundle": "build/DockHush.app"
+}

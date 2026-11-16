@@ -549,6 +549,7 @@ final class Delegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var panel: NSWindow?
     let manager = Manager.shared
     func applicationDidFinishLaunching(_ notification: Notification) {
+        AppUpdater.shared.start()
         rebuildMainMenu()
         statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.variableLength)
         if let url = Bundle.main.url(forResource:"StatusMoon",withExtension:"png"), let image = NSImage(contentsOf:url) {image.size=NSSize(width:20,height:20);image.isTemplate=true;statusItem.button?.image=image}
@@ -576,6 +577,7 @@ final class Delegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         for item in submenu.items {item.target=self}
         applicationMenu.title=L("brand")
         editItem.title=L("menu.edit")
+        MainActor.assumeIsolated { submenu.insertItem(AppUpdater.shared.menuItem(), at: 1) }
         NSApp.mainMenu = menu
     }
     @objc func showSettings() {showPanel();manager.settingsPresented=true}
@@ -588,7 +590,7 @@ final class Delegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             let item=NSMenuItem(title:L("menu.openApp", [String(describing: app.displayName)]),action:#selector(openManaged(_:)),keyEquivalent:"");item.representedObject=app.id;menu.addItem(item)
         }
         menu.addItem(.separator()); menu.addItem(withTitle:L("menu.quit"),action:#selector(stop),keyEquivalent:"")
-        for item in menu.items {item.target=self};statusItem.menu=menu
+        for item in menu.items {item.target=self};MainActor.assumeIsolated { menu.insertItem(AppUpdater.shared.menuItem(), at: 2) };statusItem.menu=menu
     }
     @objc func openManaged(_ sender: NSMenuItem) {if let id=sender.representedObject as? String,let app=manager.apps.first(where:{$0.id==id}) {manager.open(app)}}
     @objc func showPanel() {
